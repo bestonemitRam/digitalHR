@@ -4,12 +4,14 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:background_location/background_location.dart';
 import 'package:cnattendance/data/source/datastore/preferences.dart';
 import 'package:cnattendance/data/source/network/model/attendancestatus/AttendanceStatusResponse.dart';
 import 'package:cnattendance/data/source/network/model/dashboard/Dashboardresponse.dart';
 import 'package:cnattendance/data/source/network/model/dashboard/EmployeeTodayAttendance.dart';
 import 'package:cnattendance/data/source/network/model/dashboard/Overview.dart';
 import 'package:cnattendance/main.dart';
+import 'package:cnattendance/utils/background_services.dart';
 import 'package:cnattendance/utils/constant.dart';
 import 'package:cnattendance/utils/locationstatus.dart';
 import 'package:cnattendance/utils/wifiinfo.dart';
@@ -227,14 +229,14 @@ class DashboardProvider with ChangeNotifier {
       'user_token': '$token',
       'user_id': '$getUserID',
     };
-    print("Header Data is :${token}");
+    print("Header Data is :${headers}");
 
     Map<String,dynamic> body =
     {
       'attendance_date' : currentDate.toString(),
       'check_in_at' : currentTime.toString(),
 
-     'check_in_latitude': locationStatus['latitude'].toString(),
+      'check_in_latitude': locationStatus['latitude'].toString(),
       'check_in_longitude': locationStatus['longitude'].toString(),
 
     };
@@ -254,6 +256,7 @@ class DashboardProvider with ChangeNotifier {
 
       if (response.statusCode == 200 )
       {
+         bgLocationTask();
 
         final attendanceResponse =
              AttendanceStatusResponse.fromJson(responseData);
@@ -261,19 +264,22 @@ class DashboardProvider with ChangeNotifier {
             checkInAt: attendanceResponse.data.checkInAt,
             checkOutAt: attendanceResponse.data.checkOutAt,
             productionTime: attendanceResponse.data.productiveTimeInMin));
+           
+           
        return attendanceResponse;
+      
       }
       else
       {
 
 
-       _timer =  Timer.periodic(Duration(seconds:10), (Timer timer)
-       {
+      //  _timer =  Timer.periodic(Duration(seconds:10), (Timer timer)
+      //  {
 
-         getCurrentPosition();
-        checkOutAttendance();
+      //    getCurrentPosition();
+      //     checkOutAttendance();
 
-       });
+      //    });
         var errorMessage = responseData['message'];
         throw errorMessage;
       }
@@ -285,6 +291,46 @@ class DashboardProvider with ChangeNotifier {
       rethrow;
     }
   }
+
+
+  Future<void> bgLocationTask() async 
+{
+   BackgroundLocation.startLocationService();
+  initBackgroundLocation();
+
+  try {
+    final backgroundApiViewModel = DashboardProvider();
+   
+    Timer.periodic(Duration(seconds: 10), (Timer t) async 
+    {
+      
+      print("Calling getCurrentPosition within Timer");
+     
+       backgroundApiViewModel.getCurrentPosition();
+    });
+  } catch (err,stackTrace) {
+    print("This is the error: $err");
+    print("Stacktrace : ${stackTrace}");
+    throw Exception(err.toString());
+  }
+}
+void stopLocationService() 
+{
+  print("stop service");
+    BackgroundLocation.stopLocationService();
+  }
+
+
+void initBackgroundLocation() 
+{
+
+  BackgroundLocation.startLocationService();
+  BackgroundLocation.getLocationUpdates((location) 
+  {
+    print("Location: ${location.latitude}, ${location.longitude}");
+   
+  });
+}
 
   ///MARK: - Schedule Notification
   Future<void> scheduleNewNotification(
@@ -347,7 +393,7 @@ class DashboardProvider with ChangeNotifier {
             "tracker_longitude" :long.toString()
           }
       );
-      debugPrint('resp${response.body.toString()}');
+      debugPrint('resp   ${response.body.toString()}');
       final responseData = json.encode(response.body);
       print('response---->${responseData}');
     }catch(e)
@@ -366,14 +412,15 @@ class DashboardProvider with ChangeNotifier {
 if(result==true)
 {
 
-   print("dsdsfdfgfhgfh  ${result}  ");
+  
 
       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       print("latLongsddd ${position.longitude} ${position.latitude}");
       checklocation(position.longitude, position.latitude);
    
 
-}else{
+}
+else{
       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       print("latLongsddd ${position.longitude} ${position.latitude}");
       await dbHelper.insertLocationData(position.latitude!, position.longitude!, DateTime.now().millisecondsSinceEpoch);
@@ -398,6 +445,8 @@ if(result==true)
   ///MARK: - CheckOut API Implementation
   Future<AttendanceStatusResponse> checkOutAttendance() async
   {
+
+    print("dkfjhgkljfghkfgk   ");
     var uri = Uri.parse(Constant.CHECK_OUT_URL);
     Preferences preferences = Preferences();
     String token = await preferences.getToken();
@@ -420,12 +469,18 @@ if(result==true)
       'check_out_latitude': locationStatus['latitude'].toString(),
       'check_out_longitude': locationStatus['longitude'].toString(),
     };
-    print("LogOut Request is :$body");
+    print("LogOut Request is :$body  ${headers}");
     try {
       final response = await http.post(uri, headers: headers, body: body);
       debugPrint(response.body.toString());
       final responseData = json.decode(response.body);
-      if (response.statusCode == 200) {
+       print("checkOutApi :$responseData  ${headers}   ${response.statusCode}");
+      if (response.statusCode == 200) 
+      {
+         print("dfgkfgkkgkjkdfjgkkfghkdfg");
+
+
+        stopLocationService();
         final attendanceResponse =
             AttendanceStatusResponse.fromJson(responseData);
         updateAttendanceStatus(EmployeeTodayAttendance(

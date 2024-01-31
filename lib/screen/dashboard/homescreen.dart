@@ -22,18 +22,17 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   @override
-
+  late DashboardProvider dashboardResponse ;
   void initState() {
     super.initState();
    // initializeService();
-    final dashboardResponse =Provider.of<DashboardProvider>(context, listen: false)
-       ;
-     Timer.periodic(Duration(seconds:10), (Timer timer)
-    {
-
-      dashboardResponse.getCurrentPosition();
-    });
+     dashboardResponse =Provider.of<DashboardProvider>(context, listen: false) ;
+    
   }
+
+
+
+ 
 
 
   //
@@ -173,7 +172,8 @@ class HomeScreenState extends State<HomeScreen> {
             child: Container(
               width: double.infinity,
               child: Column(
-                children: [
+                children:
+                 [
                   HeaderProfile(),
                   CheckAttendance(),
                   OverviewDashboard(),

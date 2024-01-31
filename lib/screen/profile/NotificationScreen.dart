@@ -50,12 +50,13 @@ class NotificationState extends State<Notification> {
             title: Text('Notification'),
           ),
           body: RefreshIndicator(
-              onRefresh: () {
-                Provider.of<NotificationProvider>(context, listen: false).page =
-                    1;
+              onRefresh: () 
+              {
+                Provider.of<NotificationProvider>(context, listen: false).page =  1;
                 return getNotification();
               },
-              child: NotificationList())),
+              child: NotificationList())
+              ),
     );
   }
 }

@@ -84,9 +84,12 @@ class Preferences with ChangeNotifier {
 
 
   /// GET_TOKEN
-  Future<String> getToken() async {
+ Future<String> getToken() async 
+  {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(USER_TOKEN) ?? "";
+
+    print("djhgfkjdfkjdfg ${prefs.getString(USER_TOKEN)}");
+    return prefs.getString(USER_TOKEN) ?? '';
   }
 
   ///USER_ID
@@ -97,7 +100,8 @@ class Preferences with ChangeNotifier {
 
 
   /// GET_USER_AUTH
-  Future<bool> getUserAuth() async {
+  Future<bool> getUserAuth() async 
+  {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(USER_AUTH) ?? false;
   }
@@ -117,18 +121,21 @@ class Preferences with ChangeNotifier {
 
 
   /// GET_AVATAR
-  Future<String> getAvatar() async {
+  Future<String> getAvatar() async
+   {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(USER_AVATAR) ?? "";
+     return prefs.getString(USER_AVATAR) ?? "";
   }
 
   /// GET_FULL_NAME
-  Future<String> getFullName() async {
+  Future<String> getFullName() async 
+  {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(USER_FULLNAME) ?? "";
   }
 
-  Future<bool> getEnglishDate() async {
+  Future<bool> getEnglishDate() async
+   {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(APP_IN_ENGLISH) ?? true;
   }

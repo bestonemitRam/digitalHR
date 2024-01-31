@@ -40,6 +40,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 import 'data/source/network/model/logout/Logoutresponse.dart';
 import 'firebase_options.dart';
@@ -50,6 +51,7 @@ const fetchBackground = "fetchBackground";
 const getLocation = "getLocation";
 const checkLocationEnabled = "checkLocationEnabled";
 final dbHelper = DatabaseHelper();
+
 
 
 @pragma('vm:entry-point')
@@ -68,7 +70,7 @@ void callbackDispatcher(BuildContext ctx)
       case fetchBackground:
         print("Getting user locaton");
         // Position userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-         onStart();
+         //onStart();
          break;
        }
     return Future.value(true);
@@ -76,11 +78,11 @@ void callbackDispatcher(BuildContext ctx)
 }
 
 
-
+late SharedPreferences sharedPref;
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
-
+sharedPref=  await SharedPreferences.getInstance();
   // initializeService();
   //BackgroundLocation.startLocationService();
  //initBackgroundLocation();
@@ -238,27 +240,33 @@ void configLoading()
 //   );
 // }
 
-Future<void> bgLocationTask() async {
-    BackgroundLocation.startLocationService();
 
-  print("dkjfhgkjfgkjgkjdhgf    ");
-  try {
-    final backgroundApiViewModel = DashboardProvider();
+
+
+// Future<void> bgLocationTask() async {
+//     BackgroundLocation.startLocationService();
+
+//   print("dkjfhgkjfgkjgkjdhgf    ");
+//   try {
+//     final backgroundApiViewModel = DashboardProvider();
    
-    Timer.periodic(Duration(seconds: 5), (Timer t) async 
-    {
-      log("SENDING LOC ${t.tick}");
-      print("Calling getCurrentPosition within Timer");
-      initBackgroundLocation();
-       backgroundApiViewModel.getCurrentPosition();
-    });
-  } catch (err,stackTrace) {
-    print("This is the error: $err");
-    print("Stacktrace : ${stackTrace}");
-    throw Exception(err.toString());
-  }
-}
-void initBackgroundLocation() {
+//     Timer.periodic(Duration(seconds: 5), (Timer t) async 
+//     {
+//       log("SENDING LOC ${t.tick}");
+//       print("Calling getCurrentPosition within Timer");
+//       initBackgroundLocation();
+//        backgroundApiViewModel.getCurrentPosition();
+//     });
+//   } catch (err,stackTrace) {
+//     print("This is the error: $err");
+//     print("Stacktrace : ${stackTrace}");
+//     throw Exception(err.toString());
+//   }
+// }
+
+
+void initBackgroundLocation() 
+{
   print("dkfgkjdfhgjk");
  BackgroundLocation.startLocationService();
   BackgroundLocation.getLocationUpdates((location) 
@@ -334,92 +342,92 @@ Future<void> hasUserClosedLocation(BuildContext context) async
   });
 }
 
-Future<void> onStart() async {
+// Future<void> onStart() async {
 
-  print("dkjhfgkjfjkgkfhgfjkgkj");
-
-
-  WidgetsFlutterBinding.ensureInitialized();
-  final service = FlutterBackgroundService();
-  final backgroundApiViewModel = DashboardProvider();
-  Timer.periodic(Duration(seconds: 15), (Timer t) async
-  {
-    log("Service executing");
-    await backgroundApiViewModel. getCurrentPosition();
-    service.onDataReceived.listen((event) {
-      // log("THIS IS ACTION : "+event!["action"]);
-      if (event!["action"] == "setAsForeground") {
-        service.setForegroundMode(true);
-        Timer.periodic(Duration(seconds: 15), (Timer t) async
-        {
-          await backgroundApiViewModel. getCurrentPosition();
-        });
-        return;
-      }
-
-      if (event["action"] == "setAsBackground")
-      {
-        print("BG");
-        Timer.periodic(Duration(seconds: 15), (Timer t) async
-        {
-          log("SENDING LOC ${t.tick }");
-          await backgroundApiViewModel. getCurrentPosition();
-        });
-        service.setForegroundMode(false);
-      }
-
-      if (event["action"] == "stopService")
-       {
-        Timer.periodic(Duration(seconds: 15), (Timer t) async
-        {
-          await backgroundApiViewModel. getCurrentPosition();
-        });
-        service.stopBackgroundService();
-      }
-    });
-  });
+//   print("dkjhfgkjfjkgkfhgfjkgkj");
 
 
+//   WidgetsFlutterBinding.ensureInitialized();
+//   final service = FlutterBackgroundService();
+//   final backgroundApiViewModel = DashboardProvider();
+//   Timer.periodic(Duration(seconds: 15), (Timer t) async
+//   {
+//     log("Service executing");
+//     await backgroundApiViewModel. getCurrentPosition();
+//     service.onDataReceived.listen((event) {
+//       // log("THIS IS ACTION : "+event!["action"]);
+//       if (event!["action"] == "setAsForeground") {
+//         service.setForegroundMode(true);
+//         Timer.periodic(Duration(seconds: 15), (Timer t) async
+//         {
+//           await backgroundApiViewModel. getCurrentPosition();
+//         });
+//         return;
+//       }
 
-  // bring to foreground
-  service.setForegroundMode(true);
-  Timer.periodic(Duration(seconds: 15), (timer) async
-  {
+//       if (event["action"] == "setAsBackground")
+//       {
+//         print("BG");
+//         Timer.periodic(Duration(seconds: 15), (Timer t) async
+//         {
+//           log("SENDING LOC ${t.tick }");
+//           await backgroundApiViewModel. getCurrentPosition();
+//         });
+//         service.setForegroundMode(false);
+//       }
 
-    await backgroundApiViewModel. getCurrentPosition();
-    if (!(await service.isServiceRunning())) timer.cancel();
-    service.setNotificationInfo(
-      title: "My App Service",
-      content: "Updated at ${DateTime.now()}",
-    );
+//       if (event["action"] == "stopService")
+//        {
+//         Timer.periodic(Duration(seconds: 15), (Timer t) async
+//         {
+//           await backgroundApiViewModel. getCurrentPosition();
+//         });
+//         service.stopBackgroundService();
+//       }
+//     });
+//   });
 
-    service.sendData(
-      {"current_date": DateTime.now().toIso8601String()},
-    );
-  });
 
 
-  var isRunning = await service.isServiceRunning();
-  if (isRunning) {
-    service.sendData(
-      {"action": "stopService"},
-    );
-  } else {
-    service.start();
-  }
+//   // bring to foreground
+//   service.setForegroundMode(true);
+//   Timer.periodic(Duration(seconds: 15), (timer) async
+//   {
 
-  if (!isRunning) {
-    Timer.periodic(Duration(seconds: 5), (Timer t) async
-    {
-      await backgroundApiViewModel. getCurrentPosition();
-    });
-  } else {
-    Timer.periodic(Duration(seconds: 5), (Timer t) async
-    {
-      await backgroundApiViewModel. getCurrentPosition();
-    });
-  }
-}
+//     await backgroundApiViewModel. getCurrentPosition();
+//     if (!(await service.isServiceRunning())) timer.cancel();
+//     service.setNotificationInfo(
+//       title: "My App Service",
+//       content: "Updated at ${DateTime.now()}",
+//     );
+
+//     service.sendData(
+//       {"current_date": DateTime.now().toIso8601String()},
+//     );
+//   });
+
+
+//   var isRunning = await service.isServiceRunning();
+//   if (isRunning) {
+//     service.sendData(
+//       {"action": "stopService"},
+//     );
+//   } else {
+//     service.start();
+//   }
+
+//   if (!isRunning) {
+//     Timer.periodic(Duration(seconds: 5), (Timer t) async
+//     {
+//       await backgroundApiViewModel. getCurrentPosition();
+//     });
+//   } else {
+//     Timer.periodic(Duration(seconds: 5), (Timer t) async
+//     {
+//       await backgroundApiViewModel. getCurrentPosition();
+//     });
+//   }
+// }
 
 
 void stopLocationService() {
@@ -441,7 +449,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
     // TODO: implement initState
    // bgLocationTask();
      WidgetsBinding.instance.addObserver(this);
-     stopLocationService();
+     //stopLocationService();
     Timer.periodic(Duration(seconds: 3), (timer)
      {
       //hasUserClosedLocation(context);
@@ -469,22 +477,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
     {
 
       case AppLifecycleState.resumed:
-      stopLocationService();
+      //stopLocationService();
         break;
       case AppLifecycleState.paused:
-       bgLocationTask();
+       //bgLocationTask();
     
         break;
         
     
     }
   }
-
-
-
-
-
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) 
@@ -557,8 +559,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
                   primarySwatch: Colors.blue,
                 ),
                 initialRoute: '/',
-                routes: {
-                  '/': (_) => DashboardScreen(),
+             
+                routes: 
+                {
+                  '/': (_) => SplashScreen(),
                   LoginScreen.routeName: (_) => LoginScreen(),
                   DashboardScreen.routeName: (_) => DashboardScreen(),
                   ProfileScreen.routeName: (_) => ProfileScreen(),

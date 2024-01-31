@@ -4,7 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class NotificationList extends StatefulWidget {
+class NotificationList extends StatefulWidget
+ {
   @override
   State<StatefulWidget> createState() => NotificationListState();
 }
@@ -25,7 +26,8 @@ class NotificationListState extends State<NotificationList> {
   }
 
   @override
-  void initState() {
+  void initState()
+   {
     _controller = ScrollController()..addListener(_loadMore);
     super.initState();
   }

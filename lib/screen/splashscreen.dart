@@ -7,29 +7,39 @@ import 'package:cnattendance/widget/radialDecoration.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
+   static const String routeName = '/';
   @override
   State<StatefulWidget> createState() => SplashState();
 }
 
-class SplashState extends State<SplashScreen> {
+class SplashState extends State<SplashScreen> 
+{
   @override
   void initState() {
     Timer(
-      const Duration(milliseconds: 1500),
-      () async {
+      const Duration(milliseconds: 1000),
+      ()
+       async {
+
+       
         Preferences preferences = Preferences();
-        if (await preferences.getToken() == '') {
+        String result=await preferences.getToken();
+        if ( result == '') 
+        {
           Navigator.pushReplacementNamed(context, LoginScreen.routeName);
-        } else {
+        } else 
+        {
           Navigator.pushReplacementNamed(context, DashboardScreen.routeName);
-        }
+       }
       },
     );
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
+  
     return Container(
       decoration: RadialDecoration(),
       child: Center(

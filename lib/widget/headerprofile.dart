@@ -5,17 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 
-class HeaderProfile extends StatefulWidget {
+class HeaderProfile extends StatefulWidget
+ {
   @override
   State<StatefulWidget> createState() => HeaderState();
 }
 
-class HeaderState extends State<HeaderProfile> {
+class HeaderState extends State<HeaderProfile>
+ {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<PrefProvider>(context);
     return GestureDetector(
-      onTap: () {
+      onTap: () 
+      {
         pushNewScreen(context,
             screen: ProfileScreen(),
             withNavBar: false,
@@ -34,7 +37,8 @@ class HeaderState extends State<HeaderProfile> {
                 width: 50,
                 height: 50,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
+                errorBuilder: (context, error, stackTrace) 
+                {
                   return Image.asset(
                     'assets/images/dummy_avatar.png',
                     width: 50,
@@ -54,8 +58,9 @@ class HeaderState extends State<HeaderProfile> {
                     'Hello There',
                     style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
+                  if( provider.fullname!='null')
                   Text(
-                    provider.fullname,
+                    provider.fullname!='null' ?provider.fullname:""  ?? " ", 
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   Text(
@@ -67,11 +72,13 @@ class HeaderState extends State<HeaderProfile> {
             ),
             Spacer(),
             IconButton(
-                onPressed: () {
+                onPressed: ()
+                 {
                   pushNewScreen(context,
                       screen: NotificationScreen(),
                       withNavBar: false,
-                      pageTransitionAnimation: PageTransitionAnimation.fade);
+                      pageTransitionAnimation: PageTransitionAnimation.fade
+                      );
                 },
                 icon: const Icon(
                   Icons.notifications,

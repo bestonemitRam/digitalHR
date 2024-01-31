@@ -34,7 +34,8 @@ class PrefProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> getUserAuth() async {
+  Future<bool> getUserAuth() async
+   {
     Preferences preferences = Preferences();
     return await preferences.getUserAuth();
   }
@@ -51,10 +52,10 @@ class PrefProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void saveAuth(bool value) async {
+  void saveAuth(bool value) async 
+  {
     Preferences preferences = Preferences();
     preferences.saveUserAuth(value);
-
     _auth = await preferences.getUserAuth();
     notifyListeners();
   }

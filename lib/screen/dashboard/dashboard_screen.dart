@@ -16,7 +16,8 @@ import 'package:http/http.dart'as http;
 import '../../utils/trackModel.dart';
 
 class DashboardScreen extends StatefulWidget {
-  static const String routeName = '/';
+  //static const String routeName = '/';
+  static const String routeName = '/dashboard';
 
   @override
   State<StatefulWidget> createState() => DashboardScreenState();
@@ -78,6 +79,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   PersistentTabController(initialIndex: 0);
   @override
   Widget build(BuildContext context) {
+     print("dhgkjfkjkjfddddddkg");
     final prefProvider = Provider.of<PrefProvider>(context);
     prefProvider.getUser();
     return Scaffold(

@@ -44,6 +44,7 @@ class LeaveProvider with ChangeNotifier {
   }
 
   Future<Leavetyperesponse> getLeaveType() async {
+    print("dfgdfgdfgjdfgjh");
     var uri = Uri.parse(Constant.LEAVE_TYPE_URL);
 
     Preferences preferences = Preferences();

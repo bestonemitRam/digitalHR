@@ -29,14 +29,16 @@ class LeaveScreenState extends State<LeaveScreen> {
     super.didChangeDependencies();
   }
 
-  Future<String> initialState() async {
+  Future<String> initialState() async 
+  {
     final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
     final leaveData = await leaveProvider.getLeaveType();
 
     if (!mounted) {
       return "Loaded";
     }
-    if (leaveData.statusCode != 200) {
+    if (leaveData.statusCode != 200) 
+    {
       showToast(leaveData.message);
     }
 
@@ -64,7 +66,8 @@ class LeaveScreenState extends State<LeaveScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Container(
       decoration: RadialDecoration(),
       child: Scaffold(
